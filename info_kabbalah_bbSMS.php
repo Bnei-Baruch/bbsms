@@ -133,10 +133,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         // initialize vars
         $this->_apiType = CRM_Utils_Array::value('api_type', $provider, 'http');
         $this->_providerInfo = $provider;
-
-        if ($skipAuth) {
-            return TRUE;
-        }
+        CRM_Core_Error::debug_log_message("bbSMS: constructor");
 
         // first create the curl handle
 
@@ -151,7 +148,6 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         curl_setopt($this->_ch, CURLOPT_TIMEOUT, 20);
         curl_setopt($this->_ch, CURLOPT_VERBOSE, 1);
         curl_setopt($this->_ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt($this->_ch, RETURNTRANSFER, 1);
         if (ini_get('open_basedir') == '' && ini_get('safe_mode') == 'Off') {
             curl_setopt($this->_ch, CURLOPT_FOLLOWLOCATION, 1);
         }
@@ -202,7 +198,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         if ($this->_apiType == 'http') {
             $url = $this->_providerInfo['api_url'];
             $phoneNumbers = implode(';', $recipients);
-
+            $message_text = preg_replace( "/\r|\n/", "", $message); // remove line breaks
             $xml = '';
             $xml .= '<Inforu>' . PHP_EOL;
             $xml .= '  <User>' . PHP_EOL;
@@ -211,7 +207,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
             $xml .= '  </User>' . PHP_EOL;
             $xml .= '  <Content Type="sms">' . PHP_EOL;
             //TODO: max of 460 characters, is probably not multi-lingual
-            $xml .= '    <Message>' . htmlspecialchars($message) . '</Message>' . PHP_EOL;
+            $xml .= '    <Message>' . htmlspecialchars($message_text) . '</Message>' . PHP_EOL;
             $xml .= '  </Content>' . PHP_EOL;
             $xml .= '  <Recipients Type="sms">' . PHP_EOL;
             $xml .= '    <PhoneNumber>' . htmlspecialchars($phoneNumbers) . '</PhoneNumber>' . PHP_EOL;
@@ -280,5 +276,37 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
             }
         }
         return $result;
+    }
+
+    /**
+     * Authenticate
+     *
+     * @return mixed true on sucess or PEAR_Error object
+     * @access public
+     * @since 1.1
+     */
+    function authenticate()
+    {
+        return TRUE;
+    }
+
+    /**
+     * @param $url
+     * @param $postDataArray
+     * @param null $id
+     *
+     * @return object|string
+     */
+    function formURLPostData($url, &$postDataArray, $id = NULL) {
+        $url = $this->_providerInfo['api_url'] . $url;
+        // GK 13102017 - New API doesn't need this param
+        // $postDataArray['session_id'] = $this->_sessionID;
+        if ($id) {
+            if (strlen($id) < 32 || strlen($id) > 32) {
+                return PEAR::raiseError('Invalid API Message Id');
+            }
+            $postDataArray['apimsgid'] = $id;
+        }
+        return $url;
     }
 }

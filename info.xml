@@ -15,7 +15,4 @@
     <ver>4.7</ver>
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
-  <civix>
-    <namespace>CRM/Bbsms</namespace>
-  </civix>
 </extension>
