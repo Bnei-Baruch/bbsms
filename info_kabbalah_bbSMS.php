@@ -135,8 +135,6 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         $this->_providerInfo = $provider;
         CRM_Core_Error::debug_log_message("bbSMS: constructor");
 
-        // first create the curl handle
-
         /**
          * Reuse the curl handle
          */
@@ -195,7 +193,10 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
      */
     function send($recipients, $header, $message, $jobID = NULL, $userID = NULL)
     {
+        CRM_Core_Error::debug_log_message("bbSMS: send");
+
         if ($this->_apiType == 'http') {
+            CRM_Core_Error::debug_log_message("bbSMS: send http");
             $url = $this->_providerInfo['api_url'];
             $phoneNumbers = implode(';', $recipients);
             $message_text = preg_replace( "/\r|\n/", "", $message); // remove line breaks
@@ -216,10 +217,11 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
             $xml .= '    <Sender>' . htmlspecialchars($this->_providerInfo['api_params']['sender']) . '</Sender>' . PHP_EOL;
             $xml .= '  </Settings>' . PHP_EOL;
             $xml .= '</Inforu>' . PHP_EOL;
+            CRM_Core_Error::debug_log_message("bbSMS: send xml: " . $xml);
 
             $postData = urlencode($xml);
             $response = $this->curl($url, $postData);
-
+            CRM_Core_Error::debug_log_message("bbSMS: send curl: " . var_export($response, true));
             if ($response['error']) {
                 $errorMessage = $response['error'];
                 CRM_Core_Session::setStatus(ts($errorMessage), ts('Sending SMS Error'), 'error');
@@ -254,18 +256,23 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         // Send the data out over the wire
         $response = curl_exec($this->_ch);
         curl_close($this->_ch);
+        CRM_Core_Error::debug_log_message("bbSMS: curl: " . var_export($response), true);
 
         if (!$response) {
             $errorMessage = 'Error: "' . curl_error($this->_ch) . '" - Code: ' . curl_errno($this->_ch);
             CRM_Core_Session::setStatus(ts($errorMessage), ts('API Error'), 'error');
+            CRM_Core_Error::debug_log_message("bbSMS: curl error " . $errorMessage);
+
             $response = array();
             $response['error'] = $errorMessage;
             return $response;
         }
 
+        CRM_Core_Error::debug_log_message("bbSMS: curl before parsing ");
         $xmlparser = xml_parser_create();
         xml_parse_into_struct($xmlparser, $response, $values);
         xml_parser_free($xmlparser);
+        CRM_Core_Error::debug_log_message("bbSMS: curl after parsing " . var_export($values, true));
         $result = array();
         for ($i = 0; $i < count($values); $i++) {
             $v = $values[$i];
@@ -275,6 +282,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
                 $result['description'] = $v['value'];
             }
         }
+        CRM_Core_Error::debug_log_message("bbSMS: curl result " . var_export($result, true));
         return $result;
     }
 
