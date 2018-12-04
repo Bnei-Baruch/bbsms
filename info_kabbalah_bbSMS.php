@@ -254,7 +254,6 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
 
         // Send the data out over the wire
         $response = curl_exec($this->_ch);
-        curl_close($this->_ch);
         CRM_Core_Error::debug_log_message("bbSMS: curl: " . var_export($response), true);
 
         if (!$response) {
