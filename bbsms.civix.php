@@ -7,8 +7,8 @@
  * extension.
  */
 class CRM_Bbsms_ExtensionUtil {
-  const SHORT_NAME = "bbsms";
-  const LONG_NAME = "info.kabbalah.bbsms";
+  const SHORT_NAME = "bbSMS";
+  const LONG_NAME = "info.kabbalah.bbSMS";
   const CLASS_PREFIX = "CRM_Bbsms";
 
   /**
