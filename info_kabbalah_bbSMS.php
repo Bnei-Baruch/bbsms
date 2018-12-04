@@ -204,7 +204,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
             $xml .= '<Inforu>' . PHP_EOL;
             $xml .= '  <User>' . PHP_EOL;
             $xml .= '    <Username>' . htmlspecialchars($this->_providerInfo['username']) . '</Username>' . PHP_EOL;
-            $xml .= '    <Username>' . htmlspecialchars($this->_providerInfo['password']) . '</Username>' . PHP_EOL;
+            $xml .= '    <Password>' . htmlspecialchars($this->_providerInfo['password']) . '</Password>' . PHP_EOL;
             $xml .= '  </User>' . PHP_EOL;
             $xml .= '  <Content Type="sms">' . PHP_EOL;
             //TODO: max of 460 characters, is probably not multi-lingual
@@ -276,9 +276,9 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         $result = array();
         for ($i = 0; $i < count($values); $i++) {
             $v = $values[$i];
-            if ($v['tag'] == 'Status' && $v['type'] == 'completed') {
+            if ($v['tag'] == 'STATUS' && $v['type'] == 'complete') {
                 $result['status'] = $v['value'];
-            } elseif ($v['tag'] == 'Description' && $v['type'] == 'completed') {
+            } elseif ($v['tag'] == 'DESCRIPTION' && $v['type'] == 'complete') {
                 $result['description'] = $v['value'];
             }
         }
