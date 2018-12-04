@@ -193,7 +193,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
      */
     function send($recipients, $header, $message, $jobID = NULL, $userID = NULL)
     {
-        CRM_Core_Error::debug_log_message("bbSMS: send");
+        CRM_Core_Error::debug_log_message("bbSMS: send to " . var_export($recipients, true));
 
         if ($this->_apiType == 'http') {
             CRM_Core_Error::debug_log_message("bbSMS: send http");
