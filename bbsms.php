@@ -42,7 +42,7 @@ function bbsms_civicrm_install()
             'version' => 3,);
     require_once 'api/api.php';
     civicrm_api('option_value', 'create', $params);
-    return __bbsms_civix_civicrm_install();
+    return _bbsms_civix_civicrm_install();
 }
 
 /**
