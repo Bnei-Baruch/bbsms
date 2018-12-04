@@ -198,7 +198,6 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
         if ($this->_apiType == 'http') {
             CRM_Core_Error::debug_log_message("bbSMS: send http");
             $url = $this->_providerInfo['api_url'];
-            $phoneNumbers = implode(';', $recipients);
             $message_text = preg_replace( "/\r|\n/", "", $message); // remove line breaks
             $xml = '';
             $xml .= '<Inforu>' . PHP_EOL;
@@ -211,7 +210,7 @@ class info_kabbalah_bbSMS extends CRM_SMS_Provider
             $xml .= '    <Message>' . htmlspecialchars($message_text) . '</Message>' . PHP_EOL;
             $xml .= '  </Content>' . PHP_EOL;
             $xml .= '  <Recipients Type="sms">' . PHP_EOL;
-            $xml .= '    <PhoneNumber>' . htmlspecialchars($phoneNumbers) . '</PhoneNumber>' . PHP_EOL;
+            $xml .= '    <PhoneNumber>' . htmlspecialchars($recipients) . '</PhoneNumber>' . PHP_EOL;
             $xml .= '  </Recipients>' . PHP_EOL;
             $xml .= '  <Settings Type="sms">' . PHP_EOL;
             $xml .= '    <Sender>' . htmlspecialchars($this->_providerInfo['api_params']['sender']) . '</Sender>' . PHP_EOL;
